@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "blocks": [
+    {
+      "id": "b1",
+      "type": "heading",
+      "level": 2,
+      "text": "A clear place to begin",
+      "ph": "What's the news?"
+    },
+    {
+      "type": "text",
+      "html": "This is a synthetic launch-test post for a fictional beauty studio. No appointments, services or payments are being offered.",
+      "id": "b3"
+    },
+    {
+      "type": "text",
+      "html": "A useful studio website should make the essentials easy to find: who you will meet, what each service involves, how long it takes and how to ask a question before booking.",
+      "id": "b4"
+    },
+    {
+      "type": "text",
+      "html": "This post checks the complete route from a new Chapbook account connection to a public website.",
+      "id": "b5"
+    }
+  ]
+}
