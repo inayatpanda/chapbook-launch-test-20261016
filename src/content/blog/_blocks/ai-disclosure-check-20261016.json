@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "blocks": [
+    {
+      "id": "test-text",
+      "type": "text",
+      "html": "This is a synthetic publishing test for AI disclosure and origin metadata. It contains no customer information and offers no services.",
+      "aiProvenance": [
+        {
+          "kind": "generated",
+          "tool": "AI",
+          "action": "synthetic-launch-check"
+        }
+      ]
+    }
+  ],
+  "aiProvenance": [
+    {
+      "kind": "generated",
+      "tool": "AI",
+      "action": "synthetic-launch-check"
+    }
+  ]
+}
