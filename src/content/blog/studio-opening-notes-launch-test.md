@@ -4,7 +4,6 @@ description: "A synthetic beauty-studio announcement testing Chapbook’s new-si
 date: 2026-10-16
 tags: ["atlas"]
 accent: "#2dd4bf"
-draft: true
 ---
 
 ## A clear place to begin
