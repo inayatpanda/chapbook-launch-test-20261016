@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "blocks": [
+    {
+      "id": "b2",
+      "type": "text",
+      "html": "Synthetic backup import check. This draft was restored from a JSON backup."
+    }
+  ]
+}
