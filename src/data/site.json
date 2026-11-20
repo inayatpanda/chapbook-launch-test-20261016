@@ -13,28 +13,14 @@
       "primary": true
     },
     {
-      "href": "/observatory/",
-      "label": "Observatory",
-      "primary": true,
-      "themeLabel": true
-    },
-    {
-      "href": "/posts/",
-      "label": "Posts",
-      "primary": true
-    },
-    {
-      "href": "/darkroom/",
-      "label": "Darkroom",
-      "primary": true
-    },
-    {
       "href": "/about/",
-      "label": "About"
+      "label": "About",
+      "primary": false
     },
     {
       "href": "/contact/",
-      "label": "Contact"
+      "label": "Contact",
+      "primary": false
     }
   ],
   "socials": {
@@ -43,14 +29,16 @@
     "github": ""
   },
   "newsletter": {
-    "endpoint": "https://formspree.io/f/your-id"
+    "endpoint": ""
   },
   "contact": {
-    "endpoint": "https://formspree.io/f/your-id"
+    "endpoint": ""
   },
   "logo": {
     "src": "/site-images/logo-20261120152304.png",
     "showName": true,
     "favicon": "/site-images/favicon-20261120152304.png"
-  }
+  },
+  "role": "",
+  "postBadges": "3d"
 }
