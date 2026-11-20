@@ -8,10 +8,13 @@ import '../styles/headers.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import { ViewTransitions } from 'astro:transitions';
 import Icon from '../components/Icon.astro';
-import { site, pageTitle } from '../lib/site';
+import { site, pageTitle, siteSummary } from '../lib/site';
+import { getCollection } from 'astro:content';
 import { withBase } from '../lib/withBase';
 import { vocabFor } from '../lib/vocab';
-import { professionalDetails } from '../lib/professional.mjs';
+import { designCss } from '../lib/business/render.mjs';
+import {professionalDetails, safeNavHref, safeBookingUrl, addsBookingTab} from '../lib/professional.mjs';
+import themesRegistry from '../data/themes.json';
 
 // Site-wide BLOG THEME (data-blog-theme on <html>). Chosen once at blog creation
 // via site.defaultTheme; the composer writes one of the ids in src/data/themes.json.
@@ -27,9 +30,9 @@ const isKidsTheme = KIDS_THEMES.includes(blogTheme);
 
 // Build footer socials from site.json (non-empty values only)
 const socialLinks = [
-  site.socials.linkedin && { name: 'LinkedIn', url: site.socials.linkedin, icon: 'brand-linkedin' },
-  site.socials.instagram && { name: 'Instagram', url: site.socials.instagram, icon: 'brand-instagram' },
-  site.socials.github && { name: 'GitHub', url: site.socials.github, icon: 'brand-github' },
+  safeBookingUrl(site.socials.linkedin) && { name: 'LinkedIn', url: safeBookingUrl(site.socials.linkedin), icon: 'brand-linkedin' },
+  safeBookingUrl(site.socials.instagram) && { name: 'Instagram', url: safeBookingUrl(site.socials.instagram), icon: 'brand-instagram' },
+  safeBookingUrl(site.socials.github) && { name: 'GitHub', url: safeBookingUrl(site.socials.github), icon: 'brand-github' },
 ].filter(Boolean) as { name: string; url: string; icon: string }[];
 
 interface Props {
@@ -43,7 +46,7 @@ interface Props {
 }
 const {
   title,
-  description = site.description,
+  description = siteSummary,
   progress = false,
   ogImage = '/og-default.png',
   ogType = 'website',
@@ -70,9 +73,10 @@ const NAV_FALLBACK = [
   { href: '/about/', label: 'About' },
   { href: '/contact/', label: 'Contact' },
 ];
-const nav = [...(site.nav && site.nav.length ? site.nav : NAV_FALLBACK)];
+const nav = [...(site.nav && site.nav.length ? site.nav : NAV_FALLBACK)].map((n: any) => ({ ...n, href: safeNavHref(n?.href) })).filter((n: any) => n.href);
+const siteDesignCss = designCss((site as any).design, (themesRegistry.themes as any[]).find((t) => t.id === site.defaultTheme)?.preview || {});
 const professional = professionalDetails(site.professional);
-if (professional.bookingUrl && !nav.some(n => n.href === '/appointments/')) nav.push({href:'/appointments/',label:'Appointments',primary:true});
+if (addsBookingTab(professional, site, nav)) nav.push({href:'/appointments/',label:vocabFor(site.defaultTheme).bookingNav,primary:true});
 
 // Per-theme chrome vocabulary. On the observatory theme the nav keeps its house labels
 // (and the palette switcher's client renamer handles "Observatory"); every other theme
@@ -89,6 +93,8 @@ const navLabel = (n: { href: string; label: string; themeLabel?: boolean }): str
 const featureNavLabel = blogTheme === 'observatory' ? 'Observatory' : vocab.topicsLabel;
 const postsNavLabel = blogTheme === 'observatory' ? 'Posts' : vocab.postsTitle;
 const aboutNavLabel = blogTheme === 'observatory' ? 'About' : vocab.aboutLabel;
+// A website with nothing published in its posts has no feed worth offering in the footer.
+const hasPosts = (await getCollection('blog', ({ data }) => !data.draft)).length > 0;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const path = Astro.url.pathname.slice(basePath.length) || '/';
 const isCurrent = (href: string) => {
@@ -112,7 +118,9 @@ const isCurrent = (href: string) => {
         (function(){ try { if (localStorage.getItem('kids-dyslexia') === '1') document.documentElement.dataset.dyslexia = '1'; } catch (e) {} })();
       </script>
     )}
-    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    {site.logo?.favicon
+      ? <link rel="icon" type={site.logo.favicon.endsWith('.svg') ? 'image/svg+xml' : site.logo.favicon.endsWith('.png') ? 'image/png' : undefined} href={withBase(site.logo.favicon)} />
+      : <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />}
     <title>{pageTitle(title)}</title>
 
     {/* Canonical + feed */}
@@ -135,11 +143,12 @@ const isCurrent = (href: string) => {
     <meta name="twitter:image" content={ogImageUrl} />
 
     <ViewTransitions />
+    {siteDesignCss && <style is:inline set:html={siteDesignCss}></style>}
   </head>
   <body data-default-theme={site.defaultTheme}>
     {progress && <div class="progress-bar" id="progress-bar"></div>}
 
-    <SiteHeader theme={blogTheme} name={site.name} context={professional.eyebrow} nav={nav} navLabel={navLabel} isCurrent={isCurrent} />
+    <SiteHeader theme={blogTheme} name={site.name} logo={site.logo} context={professional.eyebrow} nav={nav} navLabel={navLabel} isCurrent={isCurrent} />
 
     <main>
       <slot />
@@ -150,7 +159,7 @@ const isCurrent = (href: string) => {
         <span>© {new Date().getFullYear()} {site.name}</span>
         <nav aria-label="Footer">
           {nav.map((item) => <a href={withBase(item.href)}>{navLabel(item)}</a>)}
-          <a href={withBase('/rss.xml')}>RSS</a>
+          {hasPosts && <a href={withBase('/rss.xml')}>RSS</a>}
         </nav>
         {socialLinks.length > 0 && (
           <div class="footer-socials">
