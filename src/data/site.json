@@ -47,5 +47,10 @@
   },
   "contact": {
     "endpoint": "https://formspree.io/f/your-id"
+  },
+  "logo": {
+    "src": "/site-images/logo-20261120152304.png",
+    "showName": true,
+    "favicon": "/site-images/favicon-20261120152304.png"
   }
 }
